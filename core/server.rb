@@ -5,13 +5,16 @@ require 'socket'
 require_relative 'connection'
 require_relative 'connection_manager'
 
-def server_options(port)
-  { listener: TCPServer.new(port) }
-end
-
 # Core
 module Core
-  Message = Struct.new(:from, :value) {}
+  BroadcastMessage = Struct.new(:from, :value) {}
+
+  # ServerDefaults
+  class ServerDefaults
+    def self.options(port)
+      { listener: TCPServer.new(port) }
+    end
+  end
 
   # Server
   class Server
@@ -20,10 +23,10 @@ module Core
     attr_reader :queue
     attr_reader :connections
 
-    def initialize(port, options = server_options(port))
-      @port     = port
-      @listener = options[:listener]
-      @queue = Queue.new
+    def initialize(port, options = ServerDefaults.options(port))
+      @port        = port
+      @listener    = options[:listener]
+      @queue       = Queue.new
       @connections = ConnectionManager.new
     end
 
@@ -59,7 +62,7 @@ module Core
         line = conn.read_line.strip
         break if line.eql? 'exit'
 
-        queue << Message.new(conn, line)
+        queue << BroadcastMessage.new(conn, line)
       end
 
       connections.remove(conn)
