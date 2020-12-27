@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
-require 'rspec/core/rake_task'
-RSpec::Core::RakeTask.new(:spec)
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec)
+rescue StandardError
+  puts 'rspec was unavailable'
+end
 
 require_relative 'tasks/migration_generator'
 require_relative 'tasks/database'
