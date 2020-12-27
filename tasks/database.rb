@@ -6,28 +6,28 @@ require 'active_record/schema_dumper'
 module Tasks
   # Database
   class Database
-    def self.establish_connection(config)
-      ActiveRecord::Base.establish_connection(config)
-    end
-
-    def self.create_database!
-      ActiveRecord::Base.connection.exec_query('SELECT 1+1')
-    end
-
-    def self.migrate!(config)
-      establish_connection(config)
-      context.migrate
-    end
-
-    def self.dump_schema(config, filename)
-      establish_connection(config)
-
-      File.open(filename, 'w:utf-8') do |file|
-        ActiveRecord::SchemaDumper.dump(connection, file)
-      end
-    end
-
     class << self
+      def establish_connection(config)
+        ActiveRecord::Base.establish_connection(config)
+      end
+
+      def create_database!
+        ActiveRecord::Base.connection.exec_query('SELECT 1+1')
+      end
+
+      def migrate!(config)
+        establish_connection(config)
+        context.migrate
+      end
+
+      def dump_schema(config, filename)
+        establish_connection(config)
+
+        File.open(filename, 'w:utf-8') do |file|
+          ActiveRecord::SchemaDumper.dump(connection, file)
+        end
+      end
+
       private
 
       def connection
